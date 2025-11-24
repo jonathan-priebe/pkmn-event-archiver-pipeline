@@ -6,6 +6,7 @@ The pipeline uses a central **CSV database (`events.csv`)** to automatically ass
 
 ## Table of Contents
 
+- [Quick Start](#quick-start)
 - [Structure](#structure)
     - [File Components](#file-components)
     - [Structure of `events.csv`](#detail-structure-of-eventscsv)
@@ -16,9 +17,38 @@ The pipeline uses a central **CSV database (`events.csv`)** to automatically ass
     - [Command Execution](#command-execution)
     - [I/O Types](#io-types)
     - [Assignment Examples](#assignment-examples)
-- [Data Sources](#data-sources)
+- [Docker Configuration](#docker-configuration)
+    - [Services](#services)
+    - [Volumes](#volumes)
+    - [Environment Variables](#environment-variables)
+    - [Web Interface](#web-interface)
+- [Data Sources](#data-sources--credits)
 - [Contributing](#contributing)
 - [License](#license)
+
+---
+
+## Quick Start
+
+The fastest way to get started is using Docker Compose:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd Pkmn-Event-Archiver-Pipeline
+
+# Start all services
+docker-compose up -d
+
+# Access the web interface
+open http://localhost:8080
+```
+
+This will:
+- Start the **mg-pipeline** service to process event files
+- Start the **mg-web** service for the web interface
+- Create a shared volume `mg-dlc` for processed files
+- Make the web interface available at `http://localhost:8080`
 
 ---
 
@@ -97,11 +127,66 @@ python mg_pipeline.py \
 
 ---
 
-## Data Sources
+## Docker Configuration
 
-* [Project Pokémon – Gen IV Event Collection](https://projectpokemon.org)
-* [Bulbapedia – Event Pokémon Distributions](https://bulbapedia.bulbagarden.net)
-* [PokéWiki – Events 4th & 5th Generation](https://pokewiki.de)
+### Services
+
+#### mg-pipeline
+The main processing service that converts event files to `.myg` format.
+
+#### mg-web
+Web interface for browsing and managing processed event files.
+
+### Volumes
+
+#### mg-dlc (Shared Volume)
+A Docker named volume that stores all processed `.myg` files. This volume is shared between both services:
+- **mg-pipeline** writes processed files to this volume
+- **mg-web** reads from this volume (read-only access)
+
+### Environment Variables
+
+#### Common Variables
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `OUTPUT_DIR` | `/work/DLC` | Directory where processed files are stored |
+
+#### mg-pipeline Specific
+| Variable | Default | Description |
+| :--- | :--- | :--- |
+| `ARCHIVE_URL` | Project Pokémon URL | Source URL for event files |
+| `ENABLE_MAPPING_OVERRIDE` | `"true"` | Enable YAML fallback mapping |
+| `INPUT_EXTS` | `".pcd,.pgt,.pgf,.wc4,.wc5"` | Accepted file extensions |
+| `WORKERS` | `"4"` | Number of parallel processing workers |
+
+### Web Interface
+
+The web interface provides:
+- **Browse** processed event files by game code
+- **Download** individual `.myg` files
+- **Search** functionality for specific events
+
+**Access:** `http://localhost:8080`
+
+**Port Configuration:** The service maps port `8080` from the container to the host.
+
+---
+
+## Data Sources & Credits
+
+**Event Data Sources**
+* [Project Pokémon – Gen IV Event Collection](https://projectpokemon.org) - Community-driven event file archive
+* [Bulbapedia – Event Pokémon Distributions](https://bulbapedia.bulbagarden.net) - Comprehensive Pokémon encyclopedia with event documentation
+* [PokéWiki – Events 4th & 5th Generation](https://pokewiki.de) - German Pokémon wiki with event information
+
+**Tool & Converter**
+* [MysteryGiftConverter](https://github.com/AdmiralCurtiss/MysteryGiftConvert) - Core conversion tool for processing event files
+
+### Community Contributions
+This project builds upon the work of the Pokémon community event archiving efforts. Special thanks to:
+- Event file collectors and preservers
+- Documentation contributors across various Pokémon wikis
+- Tool developers who make event file processing possible
 
 ---
 
