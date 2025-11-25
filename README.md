@@ -164,7 +164,6 @@ A Docker named volume that stores all processed `.myg` files. This volume is sha
 The web interface provides:
 - **Browse** processed event files by game code
 - **Download** individual `.myg` files
-- **Search** functionality for specific events
 
 **Access:** `http://localhost:8080`
 
