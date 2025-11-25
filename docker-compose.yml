@@ -13,7 +13,7 @@ services:
       # Parallelization
       WORKERS: "4"
     volumes:
-      - mg-dlc:/work/DLC
+      - ./dlc:/work/DLC
       - ./config:/work/config
     command: [ "bash", "/work/run.sh" ]
     
@@ -22,7 +22,7 @@ services:
     environment:
       OUTPUT_DIR: "/work/DLC"
     volumes:
-      - mg-dlc:/work/DLC:ro
+      - ./dlc:/work/DLC:ro
     ports:
       - "8080:8080"
 

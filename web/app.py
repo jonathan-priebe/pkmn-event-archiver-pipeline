@@ -6,13 +6,16 @@ OUTPUT_DIR = os.environ.get("OUTPUT_DIR", "/work/DLC")
 
 @app.route("/")
 def index():
-    # Simple HTML page with download button
+    # Simple HTML page with Download and Browser Button
     return """
     <html>
       <body>
         <h1>DLC Download</h1>
         <a href="/download-zip">
           <button>Download myg ZIP</button>
+        </a>
+        <a href="/browse">
+          <button>Browse</button>
         </a>
       </body>
     </html>
@@ -33,6 +36,19 @@ def download_zip():
                      mimetype="application/zip",
                      as_attachment=True,
                      download_name="dlc.zip")
+
+@app.route("/browse")
+def browse():
+    # Simple HTML-Page with all Data in OUTPUT_DIR
+    html = "<h1>Browse DLC</h1><ul>"
+    for root, dirs, files in os.walk(OUTPUT_DIR):
+        rel_root = os.path.relpath(root, OUTPUT_DIR)
+        for file in files:
+            rel_path = os.path.join(rel_root, file)
+            # Link to Download of Data
+            html += f'<li><a href="/dlc/{rel_path}">{rel_path}</a></li>'
+    html += "</ul>"
+    return html
 
 @app.route("/dlc/<path:filename>")
 def download(filename):
